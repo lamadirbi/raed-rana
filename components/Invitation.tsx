@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import {
   FAMILY_TITLE,
@@ -17,9 +17,10 @@ import {
 import Countdown from './Countdown'
 import WishesSection from './WishesSection'
 import EventCard from './EventCard'
-import ScatterPhotos from './ScatterPhotos'
+import SectionScatter from './SectionScatter'
 import FallingPetals from './FallingPetals'
-import { buildIcs, downloadIcs, groomPartyGoogleCal, hennaGoogleCal, weddingGoogleCal } from '@/lib/calendar'
+import { WEDDING_PHOTOS } from '@/lib/photos'
+import { downloadAllEventsIcs } from '@/lib/calendar'
 
 function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   return (
@@ -39,52 +40,6 @@ export default function Invitation() {
     return () => document.body.classList.remove('invite-revealed')
   }, [])
 
-  const weddingCal = useMemo(() => weddingGoogleCal(), [])
-  const hennaCal = useMemo(() => hennaGoogleCal(), [])
-  const groomPartyCal = useMemo(() => groomPartyGoogleCal(), [])
-
-  const downloadWeddingIcs = () => {
-    downloadIcs(
-      'zafaf-raed-rana.ics',
-      buildIcs(
-        'wedding-raed-rana@local',
-        `زفاف ${GROOM_NAME} و ${BRIDE_NAME}`,
-        new Date(2026, 5, 26, 18, 0, 0),
-        new Date(2026, 5, 26, 23, 0, 0),
-        WEDDING.fullAddress,
-        `دعوة زفاف ${GROOM_NAME} و ${BRIDE_NAME}`,
-      ),
-    )
-  }
-
-  const downloadHennaIcs = () => {
-    downloadIcs(
-      'henna-raed-rana.ics',
-      buildIcs(
-        'henna-raed-rana@local',
-        `حنة ${GROOM_NAME} و ${BRIDE_NAME}`,
-        new Date(2026, 5, 25, 17, 0, 0),
-        new Date(2026, 5, 25, 21, 0, 0),
-        HENNA.fullAddress,
-        `حفل الحنة — ${HENNA.fullAddress}`,
-      ),
-    )
-  }
-
-  const downloadGroomPartyIcs = () => {
-    downloadIcs(
-      'groom-party-raed.ics',
-      buildIcs(
-        'groom-party-raed@local',
-        `حفلة شباب ${GROOM_NAME}`,
-        new Date(2026, 5, 25, 21, 0, 0),
-        new Date(2026, 5, 26, 1, 0, 0),
-        GROOM_PARTY.fullAddress,
-        `حفلة الشباب — ${GROOM_PARTY.artists} — ${GROOM_PARTY.fullAddress}`,
-      ),
-    )
-  }
-
   return (
     <motion.main
       className="invite invite--with-photos"
@@ -93,25 +48,28 @@ export default function Invitation() {
       transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
     >
       <FallingPetals />
-      <ScatterPhotos />
       <span className="invite__corner invite__corner--tl" aria-hidden />
       <span className="invite__corner invite__corner--tr" aria-hidden />
       <span className="invite__corner invite__corner--bl" aria-hidden />
       <span className="invite__corner invite__corner--br" aria-hidden />
 
-      <Reveal>
-        <p className="bismillah invite-text-panel">بسم الله الرحمن الرحيم</p>
-      </Reveal>
-
-      <header className="crest invite-text-panel">
-        <Reveal delay={0.05}>
-          <div className="crest__title-wrap">
-            <span className="crest__line" aria-hidden />
-            <h1 className="crest__title">{FAMILY_TITLE}</h1>
-            <span className="crest__line" aria-hidden />
-          </div>
-        </Reveal>
-      </header>
+      <div className="invite-block invite-block--intro">
+        <div className="intro-photos-stage">
+          <SectionScatter photos={[WEDDING_PHOTOS[0], WEDDING_PHOTOS[1]]} variant="top" />
+          <Reveal>
+            <p className="bismillah intro-photos-stage__bismillah">بسم الله الرحمن الرحيم</p>
+          </Reveal>
+        </div>
+        <header className="crest invite-text-panel crest--after-photos">
+          <Reveal delay={0.05}>
+            <div className="crest__title-wrap">
+              <span className="crest__line" aria-hidden />
+              <h1 className="crest__title">{FAMILY_TITLE}</h1>
+              <span className="crest__line" aria-hidden />
+            </div>
+          </Reveal>
+        </header>
+      </div>
 
       <Reveal delay={0.08}>
         <blockquote className="verse invite-text-panel">
@@ -119,18 +77,17 @@ export default function Invitation() {
         </blockquote>
       </Reveal>
 
-      <section className="section" aria-labelledby="invite-heading">
-        <Reveal>
-          <div className="section-head invite-text-panel">
-            <p className="kicker">ببركة الوالدين</p>
-            <h2 className="section-title" id="invite-heading">
+      <section className="section section--parents" aria-labelledby="invite-heading">
+        <div className="invite-block invite-block--honor">
+          <Reveal delay={0.12}>
+            <h2 className="section-title honor-title invite-text-panel" id="invite-heading">
               يتشرف كل من
             </h2>
-          </div>
-        </Reveal>
+          </Reveal>
+        </div>
 
-        <div className="parents-grid">
-          <Reveal delay={0.05}>
+        <div className="parents-grid parents-grid--parents">
+          <Reveal delay={0.12}>
             <article className="parent-card">
               <div className="parent-card__parent-block">
                 <p className="parent-card__role">والد العريس</p>
@@ -138,7 +95,7 @@ export default function Invitation() {
               </div>
             </article>
           </Reveal>
-          <Reveal delay={0.1}>
+          <Reveal delay={0.14}>
             <article className="parent-card parent-card--accent">
               <div className="parent-card__parent-block">
                 <p className="parent-card__role">والد العروس</p>
@@ -148,12 +105,17 @@ export default function Invitation() {
           </Reveal>
         </div>
 
-        <Reveal delay={0.12}>
-          <p className="invite-bridge invite-text-panel">لحضور حفل زفاف</p>
-        </Reveal>
+        <div className="invite-block invite-block--bridge">
+          <SectionScatter photos={[WEDDING_PHOTOS[4], WEDDING_PHOTOS[5]]} variant="bridge" />
+          <Reveal delay={0.16}>
+            <p className="invite-bridge invite-text-panel">لحضور حفل زفاف</p>
+          </Reveal>
+        </div>
+      </section>
 
-        <div className="parents-grid parents-grid--couple">
-          <Reveal delay={0.14}>
+      <section className="section section--couple-hero" aria-label="العريس والعروس">
+        <div className="parents-grid parents-grid--couple parents-grid--couple-hero">
+          <Reveal delay={0.18}>
             <article className="parent-card parent-card--couple">
               <div className="parent-card__child-block">
                 <p className="parent-card__child-title">نجله</p>
@@ -161,7 +123,7 @@ export default function Invitation() {
               </div>
             </article>
           </Reveal>
-          <Reveal delay={0.16}>
+          <Reveal delay={0.2}>
             <article className="parent-card parent-card--couple parent-card--accent">
               <div className="parent-card__child-block">
                 <p className="parent-card__child-title">اميرته</p>
@@ -189,8 +151,6 @@ export default function Invitation() {
                 day={HENNA.day}
                 time={HENNA.time}
                 venue={HENNA.venue}
-                googleCalUrl={hennaCal}
-                onDownloadIcs={downloadHennaIcs}
               />
             </Reveal>
             <Reveal delay={0.1}>
@@ -202,8 +162,6 @@ export default function Invitation() {
                 time={WEDDING.time}
                 venue={WEDDING.venue}
                 location={WEDDING.location}
-                googleCalUrl={weddingCal}
-                onDownloadIcs={downloadWeddingIcs}
                 highlight
               />
             </Reveal>
@@ -219,20 +177,28 @@ export default function Invitation() {
                 venue={GROOM_PARTY.venue}
                 location={GROOM_PARTY.location}
                 artists={GROOM_PARTY.artists}
-                googleCalUrl={groomPartyCal}
-                onDownloadIcs={downloadGroomPartyIcs}
                 wide
               />
+            </div>
+          </Reveal>
+          <Reveal delay={0.2}>
+            <div className="events-calendar-all">
+              <button type="button" className="btn btn--primary events-calendar-all__btn" onClick={downloadAllEventsIcs}>
+                أضف كل المواعيد للتقويم
+              </button>
             </div>
           </Reveal>
         </div>
       </section>
 
-      <section className="section">
-        <Reveal>
-          <Countdown target={WEDDING_DATE} />
-        </Reveal>
-      </section>
+      <div className="invite-block invite-block--countdown">
+        <SectionScatter photos={[WEDDING_PHOTOS[6], WEDDING_PHOTOS[7]]} variant="countdown" />
+        <section className="section section--countdown">
+          <Reveal>
+            <Countdown target={WEDDING_DATE} />
+          </Reveal>
+        </section>
+      </div>
 
       <section className="section">
         <Reveal>
@@ -240,9 +206,14 @@ export default function Invitation() {
         </Reveal>
       </section>
 
-      <footer className="invite-footer invite-text-panel">
-        <p>رائد ورنا</p>
-      </footer>
+      <div className="invite-block invite-block--footer">
+        <div className="footer-photos-stage">
+          <SectionScatter photos={[WEDDING_PHOTOS[2], WEDDING_PHOTOS[3]]} variant="footer" />
+          <footer className="invite-footer footer-photos-stage__label">
+            <p>رائد ورنا</p>
+          </footer>
+        </div>
+      </div>
 
       <p className="invite-joke">
         <span className="invite-joke__dots" aria-hidden>· · ·</span>

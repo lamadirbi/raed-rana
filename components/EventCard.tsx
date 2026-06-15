@@ -7,8 +7,6 @@ type EventCardProps = {
   venue: string
   location?: string
   artists?: string
-  googleCalUrl: string
-  onDownloadIcs: () => void
   highlight?: boolean
   wide?: boolean
 }
@@ -28,8 +26,6 @@ export default function EventCard({
   venue,
   location,
   artists,
-  googleCalUrl,
-  onDownloadIcs,
   highlight,
   wide,
 }: EventCardProps) {
@@ -86,17 +82,6 @@ export default function EventCard({
           </div>
         )}
       </div>
-
-      <footer className="event-card__actions">
-        <div className="event-card__actions-row event-card__actions-row--full">
-          <a className="event-card__btn event-card__btn--ghost" href={googleCalUrl} target="_blank" rel="noreferrer">
-            Google Calendar
-          </a>
-          <button type="button" className="event-card__btn event-card__btn--ghost" onClick={onDownloadIcs}>
-            ملف التقويم
-          </button>
-        </div>
-      </footer>
     </article>
   )
 }

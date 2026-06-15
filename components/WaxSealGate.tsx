@@ -50,7 +50,7 @@ export default function WaxSealGate({
       <div className="envelope-scene">
         <motion.div
           className={`envelope${flapOpen ? ' envelope--opening' : ''}`}
-          animate={{ y: flapOpen ? -8 : 0, scale: flapOpen ? 1.02 : 1 }}
+          animate={{ y: 0, scale: flapOpen ? 1.02 : 1 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
           {/* ظهر الظرف */}
@@ -78,7 +78,7 @@ export default function WaxSealGate({
             initial={false}
             animate={
               cardVisible
-                ? { y: '-195%', opacity: 1, rotate: 0, scale: 1.02, z: 80 }
+                ? { y: '-158%', opacity: 1, rotate: 0, scale: 1.02, z: 80 }
                 : { y: '8%', opacity: 0, rotate: 0, scale: 1, z: 0 }
             }
             transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: flapOpen ? 0.15 : 0 }}

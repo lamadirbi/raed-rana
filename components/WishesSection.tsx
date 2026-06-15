@@ -2,15 +2,66 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import type { Wish } from '@/lib/wishes'
+import {
+  forgetOwnedWish,
+  getDeleteToken,
+  getOwnedWishes,
+  rememberOwnedWish,
+} from '@/lib/wishOwnership'
+
+type CreateWishResponse = Wish & {
+  deleteToken?: string
+}
+
+type WishesListProps = {
+  wishes: Wish[]
+  ownedIds: Set<string>
+  deletingId: string | null
+  onDelete: (id: string) => void
+}
+
+function WishesList({ wishes, ownedIds, deletingId, onDelete }: WishesListProps) {
+  return (
+    <div className="wishes__viewport">
+      <ul className="wishes__list">
+        {wishes.map((w) => (
+          <li key={w.id} className="wishes__item">
+            <div className="wishes__item-head">
+              <p className="wishes__item-name">{w.name}</p>
+              {ownedIds.has(w.id) && (
+                <button
+                  type="button"
+                  className="wishes__delete"
+                  onClick={() => onDelete(w.id)}
+                  disabled={deletingId === w.id}
+                  aria-label={`حذف تهنئة ${w.name}`}
+                >
+                  {deletingId === w.id ? '...' : 'حذف'}
+                </button>
+              )}
+            </div>
+            <p className="wishes__item-msg">{w.message}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
 
 export default function WishesSection() {
   const [wishes, setWishes] = useState<Wish[]>([])
+  const [ownedIds, setOwnedIds] = useState<Set<string>>(() => new Set())
   const [name, setName] = useState('')
   const [message, setMessage] = useState('')
   const [ready, setReady] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+
+  const syncOwnedIds = useCallback(() => {
+    setOwnedIds(new Set(getOwnedWishes().map((item) => item.id)))
+  }, [])
 
   const loadWishes = useCallback(async () => {
     try {
@@ -27,8 +78,9 @@ export default function WishesSection() {
   }, [])
 
   useEffect(() => {
+    syncOwnedIds()
     void loadWishes()
-  }, [loadWishes])
+  }, [loadWishes, syncOwnedIds])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -47,13 +99,19 @@ export default function WishesSection() {
         body: JSON.stringify({ name: trimmedName, message: trimmedMsg }),
       })
 
-      const data = await res.json()
+      const data = (await res.json()) as CreateWishResponse & { error?: string }
       if (!res.ok) {
         setError(data.error ?? 'تعذّر إرسال التهنئة')
         return
       }
 
-      setWishes((prev) => [data as Wish, ...prev])
+      const { deleteToken, ...wish } = data
+      if (deleteToken) {
+        rememberOwnedWish({ id: wish.id, deleteToken })
+        syncOwnedIds()
+      }
+
+      setWishes((prev) => [wish, ...prev])
       setName('')
       setMessage('')
       setSuccess('وصلت تهنئتك — تظهر للجميع')
@@ -64,13 +122,52 @@ export default function WishesSection() {
     }
   }
 
+  const handleDelete = async (id: string) => {
+    const deleteToken = getDeleteToken(id)
+    if (!deleteToken) {
+      setError('يمكن حذف التهنئة من نفس الجهاز اللي أرسلت منه فقط')
+      return
+    }
+
+    if (!window.confirm('متأكد إنك بدك تحذف تهنئتك؟')) return
+
+    setDeletingId(id)
+    setError('')
+    setSuccess('')
+
+    try {
+      const res = await fetch('/api/wishes', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, deleteToken }),
+      })
+
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error ?? 'تعذّر حذف التهنئة')
+        return
+      }
+
+      forgetOwnedWish(id)
+      syncOwnedIds()
+      setWishes((prev) => prev.filter((wish) => wish.id !== id))
+      setSuccess('تم حذف تهنئتك')
+    } catch {
+      setError('تعذّر حذف التهنئة — تحقق من الاتصال')
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
   return (
     <div className="wishes invite-text-panel">
       <div className="section-head section-head--compact">
         <p className="kicker">تهانيكم</p>
         <h2 className="section-title section-title--sm">اكتب اسمك وتهنئتك للعريس والعروس</h2>
       </div>
-      <p className="wishes__note">تظهر تهنئتك للجميع — العريس والعروس والمعازيم</p>
+      <p className="wishes__note">
+        تظهر تهنئتك للجميع — يمكنك حذف رسالتك من نفس الجهاز
+      </p>
 
       <form className="wishes__form" onSubmit={handleSubmit}>
         <label className="wishes__field">
@@ -91,7 +188,7 @@ export default function WishesSection() {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="اكتب رسالة تهنئة للعريس والعروس..."
-            rows={4}
+            rows={2}
             maxLength={500}
             required
             disabled={loading}
@@ -110,14 +207,17 @@ export default function WishesSection() {
           {wishes.length === 0 ? (
             <p className="wishes__empty">كن أول من يهنّئ العريس والعروس</p>
           ) : (
-            <ul className="wishes__list">
-              {wishes.map((w) => (
-                <li key={w.id} className="wishes__item">
-                  <p className="wishes__item-name">{w.name}</p>
-                  <p className="wishes__item-msg">{w.message}</p>
-                </li>
-              ))}
-            </ul>
+            <>
+              {wishes.length > 2 && (
+                <p className="wishes__scroll-hint">مرّر لعرض باقي التهاني</p>
+              )}
+              <WishesList
+                wishes={wishes}
+                ownedIds={ownedIds}
+                deletingId={deletingId}
+                onDelete={handleDelete}
+              />
+            </>
           )}
         </>
       )}

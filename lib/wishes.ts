@@ -5,9 +5,18 @@ export type Wish = {
   createdAt: string
 }
 
+export type StoredWish = Wish & {
+  deleteToken?: string
+}
+
 export const WISHES_KV_KEY = 'wedding:wishes'
 
-export function parseWish(raw: unknown): Wish | null {
+export function toPublicWish(wish: StoredWish): Wish {
+  const { deleteToken: _token, ...publicWish } = wish
+  return publicWish
+}
+
+export function parseWish(raw: unknown): StoredWish | null {
   if (!raw) return null
   try {
     const w = typeof raw === 'string' ? JSON.parse(raw) : raw
@@ -23,10 +32,15 @@ export function parseWish(raw: unknown): Wish | null {
         name: (w as Wish).name,
         message: (w as Wish).message,
         createdAt: (w as Wish).createdAt ?? new Date().toISOString(),
+        deleteToken: typeof (w as StoredWish).deleteToken === 'string' ? (w as StoredWish).deleteToken : undefined,
       }
     }
   } catch {
     /* ignore */
   }
   return null
+}
+
+export function serializeWish(wish: StoredWish): string {
+  return JSON.stringify(wish)
 }

@@ -26,27 +26,28 @@ export type ScatterLayout = {
   delay: number
 }
 
-/** توزيع ثابت — شاشات عريضة */
+/** توزيع ثابت — أعلى وأسفل الصفحة، بعيداً عن بطاقات الفعاليات */
 export const SCATTER_LAYOUTS: ScatterLayout[] = [
-  { top: '2%', left: '1%', width: 108, rotate: -11, zIndex: 1, delay: 0.05 },
-  { top: '14%', right: '0%', width: 96, rotate: 9, zIndex: 1, delay: 0.12 },
-  { top: '28%', left: '3%', width: 112, rotate: 7, zIndex: 2, delay: 0.18 },
-  { top: '42%', right: '2%', width: 100, rotate: -8, zIndex: 2, delay: 0.22 },
-  { top: '56%', left: '0%', width: 94, rotate: 12, zIndex: 1, delay: 0.28 },
-  { top: '68%', right: '1%', width: 110, rotate: -6, zIndex: 2, delay: 0.34 },
-  { top: '80%', left: '4%', width: 98, rotate: 5, zIndex: 1, delay: 0.4 },
+  { top: '2%', left: '-1%', width: 100, rotate: -11, zIndex: 3, delay: 0.05 },
+  { top: '2%', right: '-1%', width: 96, rotate: 9, zIndex: 3, delay: 0.12 },
+  { top: '11%', left: '0%', width: 104, rotate: 7, zIndex: 4, delay: 0.18 },
+  { top: '11%', right: '0%', width: 98, rotate: -8, zIndex: 4, delay: 0.22 },
+  { top: '21%', left: '-1%', width: 94, rotate: 12, zIndex: 3, delay: 0.28 },
+  { top: '21%', right: '-1%', width: 90, rotate: -6, zIndex: 3, delay: 0.34 },
+  { top: '73%', left: '0%', width: 100, rotate: -9, zIndex: 4, delay: 0.4 },
+  { top: '73%', right: '0%', width: 96, rotate: 8, zIndex: 4, delay: 0.45 },
 ]
 
-/** توزيع للجوالات — على الجانبين داخل الشاشة */
+/** جوال — على حواف الشاشة فوق البطاقات، بعيداً عن نص الفعاليات */
 export const SCATTER_LAYOUTS_MOBILE: ScatterLayout[] = [
-  { top: '1%', left: '0%', width: 96, rotate: -9, zIndex: 1, delay: 0.05 },
-  { top: '1%', right: '0%', width: 96, rotate: 9, zIndex: 1, delay: 0.08 },
-  { top: '16%', left: '0%', width: 102, rotate: 8, zIndex: 2, delay: 0.12 },
-  { top: '16%', right: '0%', width: 102, rotate: -8, zIndex: 2, delay: 0.15 },
-  { top: '36%', left: '0%', width: 94, rotate: -7, zIndex: 1, delay: 0.2 },
-  { top: '36%', right: '0%', width: 94, rotate: 7, zIndex: 1, delay: 0.23 },
-  { top: '58%', left: '0%', width: 100, rotate: 10, zIndex: 2, delay: 0.28 },
-  { top: '58%', right: '0%', width: 100, rotate: -10, zIndex: 2, delay: 0.31 },
+  { top: '1%', left: '-6%', width: 62, rotate: -11, zIndex: 4, delay: 0.05 },
+  { top: '1%', right: '-6%', width: 62, rotate: 11, zIndex: 4, delay: 0.08 },
+  { top: '9%', left: '-5%', width: 66, rotate: 8, zIndex: 5, delay: 0.12 },
+  { top: '9%', right: '-5%', width: 66, rotate: -8, zIndex: 5, delay: 0.15 },
+  { top: '17%', left: '-6%', width: 64, rotate: -9, zIndex: 4, delay: 0.2 },
+  { top: '17%', right: '-6%', width: 64, rotate: 9, zIndex: 4, delay: 0.23 },
+  { top: '78%', left: '-5%', width: 62, rotate: -10, zIndex: 5, delay: 0.28 },
+  { top: '78%', right: '-5%', width: 62, rotate: 10, zIndex: 5, delay: 0.31 },
 ]
 
 export const SCATTER_PHOTOS = WEDDING_PHOTOS
