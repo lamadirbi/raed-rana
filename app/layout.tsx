@@ -9,8 +9,9 @@ const amiri = Amiri({
 })
 
 const reemKufi = Reem_Kufi({
-  subsets: ['arabic', 'latin'],
-  weight: ['400', '500', '600', '700'],
+  subsets: ['arabic'],
+  weight: ['400', '600', '700'],
+  display: 'swap',
   variable: '--font-reem',
 })
 
