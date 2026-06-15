@@ -45,6 +45,8 @@ html {
   font-family: var(--font-body);
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 body {
@@ -139,6 +141,44 @@ body.invite-revealed {
   width: 36%;
   height: 32%;
   opacity: 0.08;
+}
+
+@media (max-width: 768px) {
+  .photo-backdrop--invite .photo-backdrop__layer:nth-child(1) {
+    top: 6%;
+    left: 0;
+    width: 34%;
+    height: 30%;
+    opacity: 0.08;
+  }
+
+  .photo-backdrop--invite .photo-backdrop__layer:nth-child(2) {
+    top: 40%;
+    right: 0;
+    width: 32%;
+    height: 28%;
+    opacity: 0.07;
+  }
+
+  .photo-backdrop--invite .photo-backdrop__layer:nth-child(3) {
+    bottom: 4%;
+    left: 8%;
+    width: 30%;
+    height: 26%;
+    opacity: 0.06;
+  }
+
+  .geo-bg--revealed {
+    background:
+      radial-gradient(ellipse 70% 45% at 50% 0%, rgba(139, 20, 32, 0.32), transparent 52%),
+      radial-gradient(ellipse 50% 38% at 100% 80%, rgba(110, 12, 20, 0.22), transparent 48%),
+      radial-gradient(ellipse 45% 35% at 0% 60%, rgba(94, 9, 16, 0.2), transparent 45%),
+      linear-gradient(168deg, var(--red-warm) 0%, var(--red-deep) 42%, var(--toti-dark) 100%);
+  }
+
+  .geo-bg {
+    overflow: hidden;
+  }
 }
 
 /* بتلات ورد أحمر متساقطة */
@@ -918,6 +958,13 @@ body.invite-revealed {
 @media (max-width: 768px) {
   .invite--with-photos {
     padding-inline: clamp(0.45rem, 2vw, 0.75rem);
+    overflow-x: clip;
+  }
+
+  .intro-photos-stage,
+  .footer-photos-stage {
+    overflow-x: clip;
+    overflow-y: visible;
   }
 
   .scatter-photos--mobile .scatter-photos__item {
@@ -961,26 +1008,26 @@ body.invite-revealed {
 
   .section-scatter--honor .section-scatter__item--start,
   .section-scatter--bridge .section-scatter__item--start {
-    left: -4%;
-    width: clamp(90px, 27vw, 110px);
+    left: 0;
+    width: clamp(86px, 25vw, 104px);
   }
 
   .section-scatter--honor .section-scatter__item--end,
   .section-scatter--bridge .section-scatter__item--end {
-    right: -4%;
-    width: clamp(90px, 27vw, 110px);
+    right: 0;
+    width: clamp(86px, 25vw, 104px);
   }
 
-  .section-scatter--footer .section-scatter__item--start {
-    left: -4%;
+  .section-scatter--countdown .section-scatter__item--start {
+    left: 0;
   }
 
-  .section-scatter--footer .section-scatter__item--end {
-    right: -4%;
+  .section-scatter--countdown .section-scatter__item--end {
+    right: 0;
   }
 
   .footer-photos-stage {
-    --footer-photo-w: clamp(88px, 28vw, 108px);
+    --footer-photo-w: clamp(82px, 26vw, 100px);
     height: calc(var(--footer-photo-w) * 1.25 + 0.92rem);
   }
 
@@ -990,12 +1037,12 @@ body.invite-revealed {
   }
 
   .footer-photos-stage .section-scatter--footer .section-scatter__item--start {
-    right: -0.2rem;
+    right: 0;
     left: auto;
   }
 
   .footer-photos-stage .section-scatter--footer .section-scatter__item--end {
-    left: -0.2rem;
+    left: 0;
     right: auto;
   }
 
@@ -2508,11 +2555,11 @@ body.invite-revealed {
 @media (max-width: 640px) {
   .invite,
   .invite--with-photos {
-    padding: 0.15rem 0.4rem 2.5rem;
+    padding: 0.15rem 0.35rem 2rem;
     border-radius: 0;
     border-left: none;
     border-right: none;
-    overflow: visible;
+    overflow-x: clip;
   }
 
   .invite-block--intro {
