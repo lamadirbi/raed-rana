@@ -2308,6 +2308,20 @@ body.invite-revealed {
   border-right: 3px solid var(--red-warm);
 }
 
+.wishes__item--expandable {
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.wishes__item--expandable:hover {
+  border-color: rgba(201, 169, 110, 0.32);
+}
+
+.wishes__item--expanded {
+  min-height: auto;
+  border-color: rgba(201, 169, 110, 0.38);
+}
+
 .wishes__item-head {
   display: flex;
   align-items: flex-start;
@@ -2357,6 +2371,12 @@ body.invite-revealed {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.wishes__item--expanded .wishes__item-msg {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
 }
 
 .wishes__feedback {

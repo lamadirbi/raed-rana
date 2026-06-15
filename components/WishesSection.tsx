@@ -21,28 +21,57 @@ type WishesListProps = {
 }
 
 function WishesList({ wishes, ownedIds, deletingId, onDelete }: WishesListProps) {
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+
+  const toggleExpanded = (id: string, canExpand: boolean) => {
+    if (!canExpand) return
+    setExpandedId((current) => (current === id ? null : id))
+  }
+
   return (
     <div className="wishes__viewport">
       <ul className="wishes__list">
-        {wishes.map((w) => (
-          <li key={w.id} className="wishes__item">
-            <div className="wishes__item-head">
-              <p className="wishes__item-name">{w.name}</p>
-              {ownedIds.has(w.id) && (
-                <button
-                  type="button"
-                  className="wishes__delete"
-                  onClick={() => onDelete(w.id)}
-                  disabled={deletingId === w.id}
-                  aria-label={`حذف تهنئة ${w.name}`}
-                >
-                  {deletingId === w.id ? '...' : 'حذف'}
-                </button>
-              )}
-            </div>
-            <p className="wishes__item-msg">{w.message}</p>
-          </li>
-        ))}
+        {wishes.map((w) => {
+          const isLong = w.message.length > 85
+          const isExpanded = expandedId === w.id
+
+          return (
+            <li
+              key={w.id}
+              className={`wishes__item${isLong ? ' wishes__item--expandable' : ''}${isExpanded ? ' wishes__item--expanded' : ''}`}
+              onClick={() => toggleExpanded(w.id, isLong)}
+              onKeyDown={(e) => {
+                if (!isLong) return
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  toggleExpanded(w.id, true)
+                }
+              }}
+              tabIndex={isLong ? 0 : undefined}
+              role={isLong ? 'button' : undefined}
+              aria-expanded={isLong ? isExpanded : undefined}
+            >
+              <div className="wishes__item-head">
+                <p className="wishes__item-name">{w.name}</p>
+                {ownedIds.has(w.id) && (
+                  <button
+                    type="button"
+                    className="wishes__delete"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onDelete(w.id)
+                    }}
+                    disabled={deletingId === w.id}
+                    aria-label={`حذف تهنئة ${w.name}`}
+                  >
+                    {deletingId === w.id ? '...' : 'حذف'}
+                  </button>
+                )}
+              </div>
+              <p className="wishes__item-msg">{w.message}</p>
+            </li>
+          )
+        })}
       </ul>
     </div>
   )
@@ -208,9 +237,6 @@ export default function WishesSection() {
             <p className="wishes__empty">كن أول من يهنّئ العريس والعروس</p>
           ) : (
             <>
-              {wishes.length > 2 && (
-                <p className="wishes__scroll-hint">مرّر لعرض باقي التهاني</p>
-              )}
               <WishesList
                 wishes={wishes}
                 ownedIds={ownedIds}
