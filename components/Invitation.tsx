@@ -151,6 +151,7 @@ export default function Invitation() {
                 day={HENNA.day}
                 time={HENNA.time}
                 venue={HENNA.venue}
+                location={HENNA.location}
               />
             </Reveal>
             <Reveal delay={0.1}>

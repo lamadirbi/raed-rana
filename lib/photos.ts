@@ -11,7 +11,7 @@ export const WEDDING_PHOTOS = [
 ] as const
 
 /** صورة شاشة الظرف والختم */
-export const GATE_PHOTO = WEDDING_PHOTOS[4]
+export const GATE_PHOTO = '/images/gate-bg.jpeg'
 
 /** خلفيات خفيفة للصفحة */
 export const PAGE_BACKDROPS = [WEDDING_PHOTOS[0], WEDDING_PHOTOS[2], WEDDING_PHOTOS[6]]
